@@ -1,0 +1,48 @@
+{
+  "name": "log1x/envoyer-deploy-commands",
+  "type": "package",
+  "license": "MIT",
+  "description": "A Laravel package to add Envoyer deploy commands to your application.",
+  "authors": [
+    {
+      "name": "Brandon Nifong",
+      "email": "brandon@tendency.me"
+    }
+  ],
+  "keywords": [
+    "laravel",
+    "envoyer",
+    "artisan"
+  ],
+  "support": {
+    "issues": "https://github.com/log1x/envoyer-deploy-commands/issues"
+  },
+  "autoload": {
+    "psr-4": {
+      "Log1x\\EnvoyerDeploy\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^8.0",
+    "juststeveking/laravel-envoyer-sdk": "^2.0",
+    "illuminate/console": "^10.22"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Log1x\\EnvoyerDeploy\\Providers\\EnvoyerDeployServiceProvider"
+      ],
+      "aliases": {
+        "EnvoyerDeploy": "Log1x\\EnvoyerDeploy\\Facades\\EnvoyerDeploy"
+      }
+    }
+  },
+  "scripts": {
+    "lint": [
+      "phpcs --ignore=vendor,examples --extensions=php --standard=PSR12 ."
+    ]
+  },
+  "require-dev": {
+    "laravel/pint": "^1.13"
+  }
+}
