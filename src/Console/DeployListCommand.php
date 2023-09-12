@@ -32,17 +32,22 @@ class DeployListCommand extends Command
     protected $envoyer;
 
     /**
+     * The search term.
+     */
+    protected string $search = '';
+
+    /**
      * Execute the console command.
      */
     public function handle(): void
     {
         $this->envoyer = EnvoyerDeploy::make();
 
-        $projects = collect($this->envoyer->api()->projects->all()->projects);
+        $projects = $this->envoyer->api()->getProjects();
 
-        if ($search = $this->argument('search')) {
-            $projects = $projects->filter(function ($project) use ($search) {
-                return Str::contains(strtolower($project->name), strtolower($search));
+        if ($this->search = $this->argument('search')) {
+            $projects = $projects->filter(function ($project) {
+                return Str::contains(strtolower($project->name), strtolower($this->search));
             });
         }
 
@@ -62,7 +67,7 @@ class DeployListCommand extends Command
         $projects = $projects->map(function ($project) {
             return [
                 'id' => $project->id,
-                'name' => $project->name,
+                'name' => $this->search ? $this->highlight($this->search, $project->name) : $project->name,
                 'repository' => strtolower($project->repository),
                 'branch' => $project->branch,
                 'status' => $project->status == null ? 'Ready' : Str::title($project->status),
@@ -82,5 +87,15 @@ class DeployListCommand extends Command
 
         $this->newLine();
         $this->table($headers->toArray(), $projects->toArray());
+    }
+
+    /**
+     * Bold the specified string in the given value.
+     *
+     * @return string
+     */
+    protected function highlight(string $string, string $value)
+    {
+        return preg_replace('/'.preg_quote($string).'/i', '<fg=blue;options=bold>$0</>', $value);
     }
 }
