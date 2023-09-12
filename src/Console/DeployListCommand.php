@@ -34,7 +34,7 @@ class DeployListCommand extends Command
     /**
      * The search term.
      */
-    protected string $search = '';
+    protected ?string $search = null;
 
     /**
      * Execute the console command.
