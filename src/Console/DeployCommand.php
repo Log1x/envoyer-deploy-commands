@@ -24,11 +24,18 @@ class DeployCommand extends Command
     protected $description = 'Deploy the application using Envoyer';
 
     /**
-     * The EnvoyerDeploy instance.
+     * The Envoyer Deploy instance.
      *
      * @var \Log1x\EnvoyerDeploy\EnvoyerDeploy
      */
     protected $envoyer;
+
+    /**
+     * The Envoyer API instance.
+     *
+     * @var \Log1x\EnvoyerDeploy\EnvoyerApi
+     */
+    protected $api;
 
     /**
      * The project object.
@@ -66,16 +73,19 @@ class DeployCommand extends Command
                 return;
             }
 
-            $project = $projects->count() === 1 ? $projects->first() : $this->components->choice(
-                'Which <fg=blue>project</> would you like to <fg=blue>deploy</> to?',
-                $projects->keys()->flip()->toArray(),
-                0
+            $project = $projects->count() === 1 ? $projects->first() : $projects->get(
+                $this->components->choice(
+                    'Which <fg=blue>project</> would you like to <fg=blue>deploy</> to?',
+                    $projects->keys()->flip()->toArray(),
+                    0
+                )
             );
-
-            $project = $projects->get($project);
         }
 
-        $this->project = collect($this->envoyer->api()->projects->all()->projects)
+        $this->api = $this->envoyer->api()->project($project);
+
+        $this->project = $this->api
+            ->getProjects()
             ->filter(fn ($item) => $item->id === $project)
             ->first();
 
@@ -92,21 +102,19 @@ class DeployCommand extends Command
         }
 
         $this->components->task("<fg=blue>✔</> Starting deployment for <fg=blue>{$this->project->name}</>", function () {
-            $this->envoyer->api()->deployments->on($this->project->id)->deploy();
+            $this->api->deploy();
 
             sleep(3);
         });
 
         $this->components->task('<fg=blue>✔</> Fetching the <fg=blue>deployment</> ID', function () {
-            $this->deployment = collect(
-                $this->envoyer->api()->deployments->on($this->project->id)->all()->deployments
-            )->first();
+            $this->deployment = $this->api->getDeployments()->first();
         });
 
         $this->newLine();
 
         $this->line("  <fg=blue>↳</> <options=bold>Deployment ID:</> <fg=blue>{$this->deployment->id}</>");
-        $this->line("  <fg=blue>↳</> <options=bold>Repository:</> <fg=blue>{$this->project->plain_repository}</>@<fg=blue>{$this->deployment->commit_branch}</>");
+        $this->line("  <fg=blue>↳</> <options=bold>Repository:</> <fg=blue>{$this->project->plain_repository}</>:<fg=blue>{$this->deployment->commit_branch}</>");
         $this->line("  <fg=blue>↳</> <options=bold>Commit Hash:</> <fg=blue>{$this->deployment->commit_hash}</>");
         $this->line("  <fg=blue>↳</> <options=bold>Commit Author:</> <fg=blue>{$this->deployment->commit_author}</>");
 
@@ -184,7 +192,7 @@ class DeployCommand extends Command
      */
     protected function getDeployment(): ?object
     {
-        return $this->envoyer->api()->deployments->on($this->project->id)?->first($this->deployment->id)?->deployment ?? null;
+        return $this->api->getDeployment($this->deployment->id) ?? null;
     }
 
     /**
@@ -201,13 +209,5 @@ class DeployCommand extends Command
         $this->line("  <bg={$bg}>{$spacing}</>");
         $this->line("  <bg={$bg};fg={$fg}>{$title}</>");
         $this->line("  <bg={$bg}>{$spacing}</>");
-    }
-
-    /**
-     * Create a success component.
-     */
-    protected function success(string $value): void
-    {
-        $this->line("<bg=green;fg=white> SUCCESS </> {$value}");
     }
 }
