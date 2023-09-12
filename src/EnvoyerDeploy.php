@@ -3,17 +3,15 @@
 namespace Log1x\EnvoyerDeploy;
 
 use Illuminate\Support\Collection;
-use JustSteveKing\Laravel\Envoyer\SDK\Envoyer;
-use Log1x\EnvoyerDeploy\Exceptions\ApiKeyMissingException;
 
 class EnvoyerDeploy
 {
     /**
-     * The Envoyer SDK instance.
+     * The Envoyer API instance.
      *
-     * @var \JustSteveKing\Laravel\Envoyer\SDK\Envoyer
+     * @var \Log1x\EnvoyerDeploy\EnvoyerApi
      */
-    protected $envoyer;
+    protected $api;
 
     /**
      * Create a new instance of the EnvoyerDeploy class.
@@ -24,35 +22,17 @@ class EnvoyerDeploy
     }
 
     /**
-     * Get the Envoyer SDK instance.
+     * Get hte Envoyer API instance.
      */
-    public function api(): Envoyer
+    public function api(): EnvoyerApi
     {
-        if ($this->envoyer) {
-            return $this->envoyer;
+        if ($this->api) {
+            return $this->api;
         }
 
-        $this->envoyer = Envoyer::illuminate(
-            $this->apiKey()
-        );
+        $this->api = EnvoyerApi::make();
 
-        return $this->envoyer;
-    }
-
-    /**
-     * Get the Envoyer API key.
-     *
-     * @throws \Log1x\EnvoyerDeploy\Exceptions\ApiKeyMissingException
-     */
-    public function apiKey(): string
-    {
-        $key = config('envoyer.api_key', null);
-
-        if (empty($key)) {
-            throw new ApiKeyMissingException;
-        }
-
-        return $key;
+        return $this->api;
     }
 
     /**
