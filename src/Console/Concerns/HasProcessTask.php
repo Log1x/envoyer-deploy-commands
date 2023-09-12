@@ -22,7 +22,7 @@ trait HasProcessTask
         $this->output->write("  $description ", false);
 
         $width = min(terminal()->width(), 150);
-        $dots = max($width - $descriptionWidth - 10, 0);
+        $dots = max($width - $descriptionWidth - 13, 0);
 
         $this->output->write(str_repeat('<fg=gray>.</>', $dots), false);
         $this->output->writeln(' <fg=yellow;options=bold>RUNNING</>');
