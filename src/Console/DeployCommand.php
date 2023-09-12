@@ -105,13 +105,13 @@ class DeployCommand extends Command
             return;
         }
 
-        $this->components->task("<fg=blue>✔</> Starting deployment for <fg=blue>{$this->project->name}</>", function () {
+        $this->components->task("<fg=blue>✔</> Starting Deployment for <fg=blue>{$this->project->name}</>", function () {
             $this->api->deploy();
 
             sleep(3);
         });
 
-        $this->components->task('<fg=blue>✔</> Fetching the <fg=blue>deployment</> ID', function () {
+        $this->components->task('<fg=blue>✔</> Fetching the <fg=blue>Deployment</> ID', function () {
             $this->deployment = $this->api->getDeployments()->first();
         });
 
