@@ -4,10 +4,13 @@ namespace Log1x\EnvoyerDeploy\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use Log1x\EnvoyerDeploy\Console\Concerns\HighlightsText;
 use Log1x\EnvoyerDeploy\EnvoyerDeploy;
 
 class DeployListCommand extends Command
 {
+    use HighlightsText;
+
     /**
      * The name and signature of the console command.
      *
@@ -87,15 +90,5 @@ class DeployListCommand extends Command
 
         $this->newLine();
         $this->table($headers->toArray(), $projects->toArray());
-    }
-
-    /**
-     * Bold the specified string in the given value.
-     *
-     * @return string
-     */
-    protected function highlight(string $string, string $value)
-    {
-        return preg_replace('/'.preg_quote($string).'/i', '<fg=blue;options=bold>$0</>', $value);
     }
 }

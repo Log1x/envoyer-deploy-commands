@@ -4,10 +4,14 @@ namespace Log1x\EnvoyerDeploy\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use Log1x\EnvoyerDeploy\Console\Concerns\HasProcessTask;
+use Log1x\EnvoyerDeploy\Console\Concerns\HasTitleComponent;
 use Log1x\EnvoyerDeploy\EnvoyerDeploy;
 
 class DeployCommand extends Command
 {
+    use HasProcessTask, HasTitleComponent;
+
     /**
      * The name and signature of the console command.
      *
@@ -122,12 +126,16 @@ class DeployCommand extends Command
 
         $this->handleProcesses();
 
+        $this->newLine();
+
         $this->finishDeploy(true);
 
         $this->newLine();
 
-        $started = now()->parse($this->deployment->created_at);
-        $finished = now()->parse($this->deployment->updated_at);
+        $processes = collect($this->deployment->processes);
+
+        $started = now()->parse($processes->first()->started_at);
+        $finished = now()->parse($processes->last()->finished_at);
         $elapsed = $started->diffInSeconds($finished);
 
         if (Str::is($this->deployment->status, 'finished')) {
@@ -136,7 +144,7 @@ class DeployCommand extends Command
             return;
         }
 
-        $this->components->error("Deployment <options=bold>failed</> after <fg=red>{$elapsed}</> seconds with status <fg=red>{$this->deployment->status}</>");
+        $this->line("  ❌ Deployment <options=bold>failed</> after <fg=red>{$elapsed}</> seconds with status <fg=red>{$this->deployment->status}</>");
     }
 
     /**
@@ -146,27 +154,27 @@ class DeployCommand extends Command
     {
         $this->deployment = $this->getDeployment();
 
-        foreach ($this->deployment->processes as $i => $process) {
-            $this->components->task("<fg=blue>✔</> Running <fg=blue>{$process->name}</>", fn () => $this->handleProcess($i));
+        foreach ($this->deployment->processes as $process) {
+            $this->processTask($process);
         }
     }
 
     /**
      * Handle the process step.
      */
-    protected function handleProcess(int $i, int $delay = 2): bool
+    protected function handleProcess($process, int $delay = 2): ?object
     {
         $this->deployment = $this->getDeployment();
 
-        $process = $this->deployment->processes[$i];
+        $process = collect($this->deployment->processes)->filter(fn ($item) => $item->name === $process->name)->first();
 
         if (! Str::contains($process->status, 'finished')) {
             sleep($delay);
 
-            return $this->handleProcess($i);
+            return $this->handleProcess($process);
         }
 
-        return ! Str::contains($process->status, 'error');
+        return $process;
     }
 
     /**
@@ -193,21 +201,5 @@ class DeployCommand extends Command
     protected function getDeployment(): ?object
     {
         return $this->api->getDeployment($this->deployment->id) ?? null;
-    }
-
-    /**
-     * Create a title component.
-     */
-    protected function title(string $value, int $padding = 12, string $bg = 'blue', string $fg = 'white'): void
-    {
-        $length = Str::length($value) + $padding;
-
-        $title = Str::padBoth($value, $length);
-        $spacing = Str::padLeft('', $length);
-
-        $this->newLine();
-        $this->line("  <bg={$bg}>{$spacing}</>");
-        $this->line("  <bg={$bg};fg={$fg}>{$title}</>");
-        $this->line("  <bg={$bg}>{$spacing}</>");
     }
 }
