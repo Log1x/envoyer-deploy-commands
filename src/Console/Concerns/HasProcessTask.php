@@ -31,9 +31,15 @@ trait HasProcessTask
 
         $this->clear();
 
-        $description = Str::contains($process->status, 'failed') ?
+        $status = strtolower($process->status);
+
+        $description = Str::contains($status, 'error') ?
             "<fg=red;options=bold>✖</> Failed <fg=red>{$process->name}</>" :
             "<fg=blue;options=bold>✔</> Finished <fg=blue>{$process->name}</>";
+
+        $description = Str::contains($status, 'cancelled') ?
+            "<fg=yellow;options=bold>⚠</> Cancelled <fg=yellow>{$process->name}</>" :
+            $description;
 
         $descriptionWidth = mb_strlen(preg_replace("/\<[\w=#\/\;,:.&,%?]+\>|\\e\[\d+m/", '$1', $description) ?? '');
 
@@ -53,8 +59,10 @@ trait HasProcessTask
         $this->output->write(str_repeat('<fg=gray>.</>', $dots), false);
         $this->output->write("<fg=gray>{$elapsed}</>", false);
 
-        $this->output->writeln(
-            Str::is($process->status, 'finished') ? ' <fg=green;options=bold>DONE</>' : ' <fg=red;options=bold>FAIL</>'
-        );
+        $statusLabel = Str::is($status, 'finished') ? ' <fg=green;options=bold>DONE</>' : ' <fg=red;options=bold>FAIL</>';
+        $statusLabel = Str::contains($status, 'cancelled') ?
+            ' <fg=yellow;options=bold>SKIP</>' : $statusLabel;
+
+        $this->output->writeln($statusLabel);
     }
 }
