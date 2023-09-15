@@ -65,6 +65,8 @@ class DeployCommand extends Command
 
         $this->title('Envoyer Deploy');
 
+        $this->newLine();
+
         $project = $this->envoyer->project(
             $this->argument('project')
         );
@@ -74,6 +76,12 @@ class DeployCommand extends Command
 
             if ($projects->isEmpty()) {
                 $this->components->error('There are no <fg=red>projects</> configured');
+
+                return;
+            }
+
+            if ($this->argument('project') && ! $projects->has($this->argument('project'))) {
+                $this->components->error("Project with alias <fg=red>{$this->argument('project')}</> could not be found.");
 
                 return;
             }
@@ -95,16 +103,12 @@ class DeployCommand extends Command
             ->first();
 
         if (! $this->project) {
-            $this->newLine();
-
             $this->components->error("The project with ID <fg=red>{$project}</> could not be found.");
 
             return;
         }
 
         if (! $this->option('confirm') && $this->envoyer->confirm()) {
-            $this->newLine();
-
             if (! $this->components->confirm("Deploy to <fg=blue>{$this->project->name}</>?", true)) {
                 return;
             }
