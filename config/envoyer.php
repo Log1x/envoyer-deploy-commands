@@ -55,4 +55,16 @@ return [
 
     'url' => true,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Polling Interval
+    |--------------------------------------------------------------------------
+    |
+    | Here you can set the polling interval in seconds for updating the
+    | deployment status. The default is 3 seconds.
+    |
+    */
+
+    'polling' => 3,
+
 ];

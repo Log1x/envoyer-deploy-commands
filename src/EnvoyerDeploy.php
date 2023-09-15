@@ -78,4 +78,12 @@ class EnvoyerDeploy
     {
         return config('envoyer.url', true);
     }
+
+    /**
+     * Get the polling option.
+     */
+    public function polling(): int
+    {
+        return (int) config('envoyer.polling', 3);
+    }
 }
