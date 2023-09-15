@@ -12,7 +12,7 @@ class EnvoyerApi
     /**
      * The Envoyer API endpoint.
      */
-    protected string $endpoint = 'https://envoyer.io/api/projects';
+    protected string $endpoint = 'https://envoyer.io/api';
 
     /**
      * The API key.
@@ -108,7 +108,7 @@ class EnvoyerApi
     public function getProjects(): Collection
     {
         $projects = json_decode(
-            $this->api()->get('/')->body()
+            $this->api()->get('/projects')->body()
         );
 
         return collect($projects->projects ?? []);
@@ -120,7 +120,7 @@ class EnvoyerApi
     public function getProject(): ?object
     {
         $project = json_decode(
-            $this->api()->get("/{$this->project}")->body()
+            $this->api()->get("/projects/{$this->project}")->body()
         );
 
         return $project->project ?? null;
@@ -132,7 +132,7 @@ class EnvoyerApi
     public function getDeployment(int $deployment): ?object
     {
         $deployment = json_decode(
-            $this->api()->get("/{$this->project}/deployments/{$deployment}")->body()
+            $this->api()->get("/projects/{$this->project}/deployments/{$deployment}")->body()
         );
 
         return $deployment->deployment ?? null;
@@ -144,10 +144,34 @@ class EnvoyerApi
     public function getDeployments(): Collection
     {
         $deployments = json_decode(
-            $this->api()->get("/{$this->project}/deployments")->body()
+            $this->api()->get("/projects/{$this->project}/deployments")->body()
         );
 
         return collect($deployments->deployments ?? []);
+    }
+
+    /**
+     * Get the project actions.
+     */
+    public function getActions(): Collection
+    {
+        $actions = json_decode(
+            $this->api()->get('/actions')->body()
+        );
+
+        return collect($actions->actions ?? []);
+    }
+
+    /**
+     * Get the specified project's hooks.
+     */
+    public function getHooks(): Collection
+    {
+        $hooks = json_decode(
+            $this->api()->get("/projects/{$this->project}/hooks")->body()
+        );
+
+        return collect($hooks->hooks ?? []);
     }
 
     /**
@@ -155,6 +179,6 @@ class EnvoyerApi
      */
     public function deploy(): void
     {
-        $this->api()->post("/{$this->project}/deployments");
+        $this->api()->post("/projects/{$this->project}/deployments");
     }
 }
