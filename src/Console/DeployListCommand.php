@@ -25,7 +25,7 @@ class DeployListCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Deploy the application using Envoyer';
+    protected $description = 'List the projects available in Envoyer';
 
     /**
      * The EnvoyerDeploy instance.
