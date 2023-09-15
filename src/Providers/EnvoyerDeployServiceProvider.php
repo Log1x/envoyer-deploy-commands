@@ -4,6 +4,7 @@ namespace Log1x\EnvoyerDeploy\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Log1x\EnvoyerDeploy\Console\DeployCommand;
+use Log1x\EnvoyerDeploy\Console\DeployInfoCommand;
 use Log1x\EnvoyerDeploy\Console\DeployListCommand;
 
 class EnvoyerDeployServiceProvider extends ServiceProvider
@@ -36,6 +37,7 @@ class EnvoyerDeployServiceProvider extends ServiceProvider
         $this->commands([
             DeployCommand::class,
             DeployListCommand::class,
+            DeployInfoCommand::class,
         ]);
     }
 }

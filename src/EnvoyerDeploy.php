@@ -62,4 +62,20 @@ class EnvoyerDeploy
 
         return $project ? (int) $project : null;
     }
+
+    /**
+     * Get the confirm option.
+     */
+    public function confirm(): bool
+    {
+        return (bool) config('envoyer.confirm', true);
+    }
+
+    /**
+     * Get the URL option.
+     */
+    public function url(): string|bool
+    {
+        return config('envoyer.url', true);
+    }
 }

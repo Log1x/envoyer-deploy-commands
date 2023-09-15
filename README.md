@@ -47,6 +47,12 @@ Usage is extremely straight forward. Use the `artisan deploy` command optionally
 $ php artisan deploy [alias]
 ```
 
+You can also get detailed information on your project using the `artisan deploy:info` command:
+
+```bash
+$ php artisan deploy:info [alias]
+```
+
 ## Bug Reports
 
 If you discover a bug in Envoyer Deploy Commands, please [open an issue](https://github.com/Log1x/envoyer-deploy-commands/issues).

@@ -16,7 +16,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | The deployment projects.
+    | Envoyer Projects
     |--------------------------------------------------------------------------
     |
     | Here you will configure the projects you wish to deploy to. You must
@@ -29,5 +29,30 @@ return [
         // 'production' => 000000,
         // 'staging' => 111111,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Confirmation Prompt
+    |--------------------------------------------------------------------------
+    |
+    | Here you can toggle the default confirmation prompt when deploying.
+    | You can also toggle this on a per-project basis by passing the
+    | `--confirm` flag when deploying.
+    |
+    */
+
+    'confirm' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Show Monitor URL
+    |--------------------------------------------------------------------------
+    |
+    | Here you can toggle displaying the monitor URL after deploying. You can
+    | optionally set this to a string to override the URL with a custom value.
+    |
+    */
+
+    'url' => true,
 
 ];
