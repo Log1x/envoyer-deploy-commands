@@ -29,7 +29,7 @@ Start by publishing the package configuration:
 $ php artisan vendor:publish --tag=envoyer-deploy-config
 ```
 
-Customize the configuration adding at bare minimum your Envoyer API key with the `deployments:create` permission scope.
+Customize the configuration adding your Envoyer API key with the `deployments:create` permission scope.
 
 After adding an API key, you can list the available projects and their corrosponding ID's:
 
@@ -37,7 +37,7 @@ After adding an API key, you can list the available projects and their corrospon
 $ php artisan deploy:list [search]
 ```
 
-Once you have your project ID, add it the `projects` section of `config/envoyer.php` along with an alias.
+Once you have your project ID, add it the `projects` section of `config/envoyer.php` along with an alias (e.g. `production`).
 
 ## Usage
 
@@ -52,6 +52,8 @@ You can also get detailed information on your project using the `artisan deploy:
 ```bash
 $ php artisan deploy:info [alias]
 ```
+
+![Info Screenshot](https://i.imgur.com/u4Gq7sX.png)
 
 ## Bug Reports
 
