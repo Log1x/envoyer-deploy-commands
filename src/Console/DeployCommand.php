@@ -117,7 +117,7 @@ class DeployCommand extends Command
         $this->components->task("<fg=blue>✔</> Starting Deployment for <fg=blue>{$this->project->name}</>", function () {
             $this->api->deploy();
 
-            sleep(3);
+            sleep($this->envoyer->polling());
         });
 
         $this->components->task('<fg=blue>✔</> Fetching the <fg=blue>Deployment</> ID', function () {
@@ -186,14 +186,14 @@ class DeployCommand extends Command
     /**
      * Handle the process step.
      */
-    protected function handleProcess($process, int $delay = 2): ?object
+    protected function handleProcess($process): ?object
     {
         $this->deployment = $this->getDeployment();
 
         $process = collect($this->deployment->processes)->filter(fn ($item) => $item->name === $process->name)->first();
 
         if (! Str::contains(strtolower($process->status), ['finished', 'error', 'cancelled'])) {
-            sleep($delay);
+            sleep($this->envoyer->polling());
 
             return $this->handleProcess($process);
         }
