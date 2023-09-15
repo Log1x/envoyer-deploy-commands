@@ -164,7 +164,7 @@ class DeployCommand extends Command
             return;
         }
 
-        $this->line("  ❌ Deployment <options=bold>failed</> after <fg=red>{$elapsed}</> seconds with status <fg=red>{$this->deployment->status}</>");
+        $this->line("  ❌ Deployment <options=bold>failed</> after <fg=red>{$elapsed}</> seconds with status <fg=red>{$this->deployment->status}</>.");
     }
 
     /**
@@ -188,7 +188,7 @@ class DeployCommand extends Command
 
         $process = collect($this->deployment->processes)->filter(fn ($item) => $item->name === $process->name)->first();
 
-        if (! Str::contains($process->status, 'finished')) {
+        if (! Str::contains(strtolower($process->status), ['finished', 'error', 'cancelled'])) {
             sleep($delay);
 
             return $this->handleProcess($process);
@@ -204,8 +204,12 @@ class DeployCommand extends Command
     {
         $this->deployment = $this->getDeployment();
 
+        if (Str::contains($this->deployment->status, ['error', 'cancelled'])) {
+            return false;
+        }
+
         if (Str::contains($this->deployment->status, 'finished')) {
-            return null;
+            return true;
         }
 
         sleep($delay);
