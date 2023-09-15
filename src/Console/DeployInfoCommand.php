@@ -77,14 +77,14 @@ class DeployInfoCommand extends Command
             $lastDeployed = $project->last_deployment_timestamp ?? 'N/A';
 
             $columns = [
-                'Alias' => "<fg=blue;options=bold>{$projects->flip()->get($project->id)}</>",
-                'Repository' => "{$project->plain_repository}:{$project->branch}",
-                'Status' => $project->status == null ? '<fg=green;options=bold>Ready</>' : '<fg=yellow;options=bold>'.Str::title($project->status).'</>',
-                'Heartbeat' => $project->has_missing_heartbeats ? '<fg=red;options=bold>Missing</>' : '<fg=green;options=bold>Healthy</>',
-                'Last Deployed' => $lastDeployed,
-                'Last Deploy Took' => "{$project->last_deployment_took}s",
-                'Daily Deployments' => $project->daily_deploys,
-                'Weekly Deployments' => $project->weekly_deploys,
+                '<fg=blue>┌</> Alias' => "<fg=blue;options=bold>{$projects->flip()->get($project->id)}</>",
+                '<fg=blue>├</> Repository' => "{$project->plain_repository}:{$project->branch}",
+                '<fg=blue>├</> Status' => $project->status == null ? '<fg=green;options=bold>Ready</>' : '<fg=yellow;options=bold>'.Str::title($project->status).'</>',
+                '<fg=blue>├</> Heartbeat' => $project->has_missing_heartbeats ? '<fg=red;options=bold>Missing</>' : '<fg=green;options=bold>Healthy</>',
+                '<fg=blue>├</> Last Deployed' => $lastDeployed,
+                '<fg=blue>├</> Last Deploy Took' => "{$project->last_deployment_took}s",
+                '<fg=blue>├</> Daily Deployments' => $project->daily_deploys,
+                '<fg=blue>└</> Weekly Deployments' => $project->weekly_deploys,
             ];
 
             foreach ($columns as $label => $value) {
@@ -102,6 +102,19 @@ class DeployInfoCommand extends Command
                 }
             }
 
+            $folders = $this->envoyer->api()->getFolders();
+
+            if ($folders->isNotEmpty()) {
+                $this->newLine();
+                $this->components->twoColumnDetail('<fg=blue;options=bold>Linked Folders</>');
+
+                $folders->each(function ($folder, $i) {
+                    $i++;
+
+                    return $this->components->twoColumnDetail("<fg=blue>{$i}.</> {$folder->from} <fg=blue>→</> {$folder->to}");
+                });
+            }
+
             if ($project->servers) {
                 foreach ($project->servers as $i => $server) {
                     $this->newLine();
@@ -115,11 +128,11 @@ class DeployInfoCommand extends Command
                     $status = Str::title($server->connection_status);
 
                     $columns = [
-                        'Name' => "<fg=blue;options=bold>{$server->name}</>",
-                        'Address' => "{$server->ip_address}:{$server->port}",
-                        'User' => $server->connect_as,
-                        'Path' => $server->deployment_path,
-                        'Status' => Str::contains($server->connection_status, 'success') ? "<fg=green;options=bold>{$status}</>" : "<fg=red;options=bold>{$status}</>",
+                        '<fg=blue>┌</> Name' => "<fg=blue;options=bold>{$server->name}</>",
+                        '<fg=blue>├</> Address' => "{$server->ip_address}:{$server->port}",
+                        '<fg=blue>├</> User' => $server->connect_as,
+                        '<fg=blue>├</> Path' => $server->deployment_path,
+                        '<fg=blue>└</> Status' => Str::contains($server->connection_status, 'success') ? "<fg=green;options=bold>{$status}</>" : "<fg=red;options=bold>{$status}</>",
                     ];
 
                     foreach ($columns as $label => $value) {
@@ -132,9 +145,9 @@ class DeployInfoCommand extends Command
                 $this->newLine();
 
                 $health = collect([
-                    'New York' => $project->new_york_status,
-                    'London' => $project->london_status,
-                    'Singapore' => $project->singapore_status,
+                    '<fg=blue>┌</> New York' => $project->new_york_status,
+                    '<fg=blue>├</> London' => $project->london_status,
+                    '<fg=blue>└</> Singapore' => $project->singapore_status,
                 ]);
 
                 $health = $health->map(function ($status) {
