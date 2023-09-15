@@ -18,7 +18,8 @@ class DeployCommand extends Command
      * @var string
      */
     protected $signature = 'deploy
-                            {project? : The project to deploy to}';
+                            {project? : The project to deploy to}
+                            {--confirm : Confirm the deployment}';
 
     /**
      * The console command description.
@@ -93,16 +94,20 @@ class DeployCommand extends Command
             ->filter(fn ($item) => $item->id === $project)
             ->first();
 
-        $this->newLine();
-
         if (! $this->project) {
+            $this->newLine();
+
             $this->components->error("The project with ID <fg=red>{$project}</> could not be found.");
 
             return;
         }
 
-        if (! $this->components->confirm("Deploy to <fg=blue>{$this->project->name}</>?", true)) {
-            return;
+        if (! $this->option('confirm') && $this->envoyer->confirm()) {
+            $this->newLine();
+
+            if (! $this->components->confirm("Deploy to <fg=blue>{$this->project->name}</>?", true)) {
+                return;
+            }
         }
 
         $this->components->task("<fg=blue>✔</> Starting Deployment for <fg=blue>{$this->project->name}</>", function () {
@@ -140,6 +145,21 @@ class DeployCommand extends Command
 
         if (Str::is($this->deployment->status, 'finished')) {
             $this->line("  🎉 Deployment <options=bold>completed</> in <fg=blue>{$elapsed}</> seconds.");
+
+            if ($this->envoyer->url()) {
+                if (is_string($this->envoyer->url())) {
+                    $this->line("     <fg=blue>↳</> <options=underscore>{$this->envoyer->url()}</>");
+
+                    return;
+                }
+
+                if ($this->project->monitor) {
+                    $scheme = parse_url($this->project->monitor, PHP_URL_SCHEME);
+                    $url = parse_url($this->project->monitor, PHP_URL_HOST);
+
+                    $this->line("     <fg=blue>↳</> <options=underscore>{$scheme}://{$url}</>");
+                }
+            }
 
             return;
         }
