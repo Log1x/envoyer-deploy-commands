@@ -126,10 +126,10 @@ class DeployCommand extends Command
 
         $this->newLine();
 
-        $this->line("  <fg=blue>↳</> <options=bold>Deployment ID:</> <fg=blue>{$this->deployment->id}</>");
-        $this->line("  <fg=blue>↳</> <options=bold>Repository:</> <fg=blue>{$this->project->plain_repository}</>:<fg=blue>{$this->deployment->commit_branch}</>");
-        $this->line("  <fg=blue>↳</> <options=bold>Commit Hash:</> <fg=blue>{$this->deployment->commit_hash}</>");
-        $this->line("  <fg=blue>↳</> <options=bold>Commit Author:</> <fg=blue>{$this->deployment->commit_author}</>");
+        $this->line("  <fg=blue>┌</> <options=bold>Deployment ID:</> <fg=blue>{$this->deployment->id}</>");
+        $this->line("  <fg=blue>├</> <options=bold>Repository:</> <fg=blue>{$this->project->plain_repository}</>:<fg=blue>{$this->deployment->commit_branch}</>");
+        $this->line("  <fg=blue>├</> <options=bold>Commit Hash:</> <fg=blue>{$this->deployment->commit_hash}</>");
+        $this->line("  <fg=blue>└</> <options=bold>Commit Author:</> <fg=blue>{$this->deployment->commit_author}</>");
 
         $this->newLine();
 

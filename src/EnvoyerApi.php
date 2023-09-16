@@ -175,6 +175,18 @@ class EnvoyerApi
     }
 
     /**
+     * Get the specified project's linked folders.
+     */
+    public function getFolders(): Collection
+    {
+        $folders = json_decode(
+            $this->api()->get("/projects/{$this->project}/folders")->body()
+        );
+
+        return collect($folders->folders ?? []);
+    }
+
+    /**
      * Create a new deployment.
      */
     public function deploy(): void
