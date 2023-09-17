@@ -5,7 +5,8 @@ namespace Log1x\EnvoyerDeploy;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
-use Log1x\EnvoyerDeploy\Exceptions\ApiKeyMissingException;
+use Log1x\EnvoyerDeploy\Exceptions\EnvoyerApiErrorException;
+use Log1x\EnvoyerDeploy\Exceptions\EnvoyerApiKeyMissingException;
 
 class EnvoyerApi
 {
@@ -34,6 +35,8 @@ class EnvoyerApi
 
     /**
      * Get the Envoyer HTTP client.
+     *
+     * @throws \Log1x\EnvoyerDeploy\Exceptions\EnvoyerApiKeyMissingException
      */
     public function api(): PendingRequest
     {
@@ -42,6 +45,42 @@ class EnvoyerApi
             'Content-Type' => 'application/json',
             'Authorization' => "Bearer {$this->getApiKey()}",
         ])->baseUrl($this->endpoint);
+    }
+
+    /**
+     * Get from the Envoyer API.
+     *
+     * @throws \Log1x\EnvoyerDeploy\Exceptions\EnvoyerApiErrorException
+     */
+    public function get(string $uri): object
+    {
+        $response = $this->api()->get($uri);
+
+        if ($response->failed()) {
+            throw new EnvoyerApiErrorException($response);
+        }
+
+        return json_decode(
+            $response->body()
+        );
+    }
+
+    /**
+     * Post to the Envoyer API.
+     *
+     * @throws \Log1x\EnvoyerDeploy\Exceptions\EnvoyerApiErrorException
+     */
+    public function post(string $uri): object
+    {
+        $response = $this->api()->post($uri);
+
+        if ($response->failed()) {
+            throw new EnvoyerApiErrorException($response);
+        }
+
+        return json_decode(
+            $response->body()
+        );
     }
 
     /**
@@ -75,7 +114,7 @@ class EnvoyerApi
     /**
      * Get the Envoyer API key.
      *
-     * @throws \Log1x\EnvoyerDeploy\Exceptions\ApiKeyMissingException
+     * @throws \Log1x\EnvoyerDeploy\Exceptions\EnvoyerApiKeyMissingException
      */
     public function getApiKey(): string
     {
@@ -86,7 +125,7 @@ class EnvoyerApi
         $this->apiKey = config('envoyer.api_key', null);
 
         if (empty($this->apiKey)) {
-            throw new ApiKeyMissingException;
+            throw new EnvoyerApiKeyMissingException;
         }
 
         return $this->apiKey;
@@ -107,9 +146,7 @@ class EnvoyerApi
      */
     public function getProjects(): Collection
     {
-        $projects = json_decode(
-            $this->api()->get('/projects')->body()
-        );
+        $projects = $this->get('/projects');
 
         return collect($projects->projects ?? []);
     }
@@ -119,9 +156,7 @@ class EnvoyerApi
      */
     public function getProject(): ?object
     {
-        $project = json_decode(
-            $this->api()->get("/projects/{$this->project}")->body()
-        );
+        $project = $this->get("/projects/{$this->project}");
 
         return $project->project ?? null;
     }
@@ -131,9 +166,7 @@ class EnvoyerApi
      */
     public function getDeployment(int $deployment): ?object
     {
-        $deployment = json_decode(
-            $this->api()->get("/projects/{$this->project}/deployments/{$deployment}")->body()
-        );
+        $deployment = $this->get("/projects/{$this->project}/deployments/{$deployment}");
 
         return $deployment->deployment ?? null;
     }
@@ -143,9 +176,7 @@ class EnvoyerApi
      */
     public function getDeployments(): Collection
     {
-        $deployments = json_decode(
-            $this->api()->get("/projects/{$this->project}/deployments")->body()
-        );
+        $deployments = $this->get("/projects/{$this->project}/deployments");
 
         return collect($deployments->deployments ?? []);
     }
@@ -155,9 +186,7 @@ class EnvoyerApi
      */
     public function getActions(): Collection
     {
-        $actions = json_decode(
-            $this->api()->get('/actions')->body()
-        );
+        $actions = $this->get('/actions');
 
         return collect($actions->actions ?? []);
     }
@@ -167,9 +196,7 @@ class EnvoyerApi
      */
     public function getHooks(): Collection
     {
-        $hooks = json_decode(
-            $this->api()->get("/projects/{$this->project}/hooks")->body()
-        );
+        $hooks = $this->get("/projects/{$this->project}/hooks");
 
         return collect($hooks->hooks ?? []);
     }
@@ -179,9 +206,7 @@ class EnvoyerApi
      */
     public function getFolders(): Collection
     {
-        $folders = json_decode(
-            $this->api()->get("/projects/{$this->project}/folders")->body()
-        );
+        $folders = $this->get("/projects/{$this->project}/folders");
 
         return collect($folders->folders ?? []);
     }
@@ -191,6 +216,6 @@ class EnvoyerApi
      */
     public function deploy(): void
     {
-        $this->api()->post("/projects/{$this->project}/deployments");
+        $this->post("/projects/{$this->project}/deployments");
     }
 }

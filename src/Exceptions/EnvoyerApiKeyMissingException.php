@@ -4,7 +4,7 @@ namespace Log1x\EnvoyerDeploy\Exceptions;
 
 use Exception;
 
-class ApiKeyMissingException extends Exception
+class EnvoyerApiKeyMissingException extends Exception
 {
     /**
      * Create a new exception instance.
