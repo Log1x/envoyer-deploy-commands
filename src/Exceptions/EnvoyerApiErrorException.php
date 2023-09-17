@@ -3,6 +3,7 @@
 namespace Log1x\EnvoyerDeploy\Exceptions;
 
 use Exception;
+use Illuminate\Http\Client\Response;
 
 class EnvoyerApiErrorException extends Exception
 {
@@ -24,7 +25,7 @@ class EnvoyerApiErrorException extends Exception
      *
      * @return void
      */
-    public function __construct($response)
+    public function __construct(Response $response)
     {
         parent::__construct($this->errorCodes[$response->status()] ?? $response->body());
     }
