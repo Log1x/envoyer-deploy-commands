@@ -70,7 +70,7 @@ class EnvoyerApi
      *
      * @throws \Log1x\EnvoyerDeploy\Exceptions\EnvoyerApiErrorException
      */
-    public function post(string $uri): object
+    public function post(string $uri): ?object
     {
         $response = $this->api()->post($uri);
 
