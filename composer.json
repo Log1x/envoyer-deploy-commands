@@ -24,9 +24,13 @@
   },
   "require": {
     "php": "^8.0",
-    "illuminate/console": "^9.0|^10.0",
-    "illuminate/support": "^9.0|^10.0",
-    "illuminate/http": "^9.0|^10.0"
+    "illuminate/console": "^9.0|^10.0|^11.0",
+    "illuminate/support": "^9.0|^10.0|^11.0",
+    "illuminate/http": "^9.0|^10.0|^11.0",
+    "guzzlehttp/guzzle": "^7.0"
+  },
+  "require-dev": {
+    "laravel/pint": "^1.13"
   },
   "extra": {
     "laravel": {
@@ -39,8 +43,5 @@
     "lint": [
       "phpcs --ignore=vendor,examples --extensions=php --standard=PSR12 ."
     ]
-  },
-  "require-dev": {
-    "laravel/pint": "^1.13"
   }
 }
