@@ -48,7 +48,7 @@ class EnvoyerDeploy
     /**
      * Get the specified project.
      */
-    public function project(string|int $project = null): ?int
+    public function project(string|int|null $project = null): ?int
     {
         if (! $project) {
             return null;
